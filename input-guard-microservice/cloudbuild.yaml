@@ -1,0 +1,49 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/input-guard-microservice'
+      - '.'
+
+  # Push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/input-guard-microservice'
+
+  # Deploy the Kubernetes Deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: Deploy
+    env:
+      - 'CLOUDSDK_CONTAINER_CLUSTER=gke-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+    args:
+      - 'apply'
+      - '-f'
+      - 'deploy.yaml'
+
+  # Deploy the Kubernetes Service
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: Deploy-Service
+    env:
+      - 'CLOUDSDK_CONTAINER_CLUSTER=gke-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+    args:
+      - 'apply'
+      - '-f'
+      - 'service.yaml'
+
+  # Deploy the Kubernetes Communicate Service
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: Communicate-Service
+    env:
+      - 'CLOUDSDK_CONTAINER_CLUSTER=gke-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+    args:
+      - 'apply'
+      - '-f'
+      - 'communicate-service.yaml'

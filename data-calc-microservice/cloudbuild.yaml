@@ -1,0 +1,27 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/data-calc-microservice'
+      - '.'
+
+  # Push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/data-calc-microservice'
+
+  # Deploy the Kubernetes Deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: Deploy
+    env:
+      - 'CLOUDSDK_CONTAINER_CLUSTER=gke-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+    args:
+      - 'apply'
+      - '-f'
+      - 'deploy.yaml'

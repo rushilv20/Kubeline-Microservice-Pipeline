@@ -1,0 +1,32 @@
+apiVersion: apps/v1 # Version of the Kubernetes API
+kind: Deployment
+
+metadata:
+  name: input-guard-microservice
+
+spec: # Specification for the deployment
+  replicas: 1
+  selector:
+    matchLabels: # Deployment will only manage the pods that have a label with the key app and the value input-guard-microservice
+      app: input-guard-microservice
+
+  template: # Template for creating the pods
+    metadata:
+      labels:
+        app: input-guard-microservice # Labels applied to the pods
+
+    spec: # Specification for the pod template
+      containers: # Containers to run within the pod
+      - name: input-guard-microservice
+        image: "us-central1-docker.pkg.dev/gke-ishan/my-repository/input-guard-microservice"
+        imagePullPolicy: Always
+        ports: # Ports to expose on the container
+        - containerPort: 6000
+        volumeMounts: # Volumes to mount in the container
+          - name: storage-volume
+            mountPath: /ishan_PV_dir
+
+      volumes: # Volumes to be used by the pod
+      - name: storage-volume
+        persistentVolumeClaim:
+          claimName: persistent-storage-claim

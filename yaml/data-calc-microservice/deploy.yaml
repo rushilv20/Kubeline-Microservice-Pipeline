@@ -1,0 +1,32 @@
+apiVersion: apps/v1 # Version of the Kubernetes API
+kind: Deployment
+
+metadata:
+  name: data-calc-microservice
+
+spec: # Specification for the deployment
+  replicas: 1
+  selector:
+    matchLabels: # Deployment will only manage the pods that have a label with the key app and the value data-calc-microservice
+      app: data-calc-microservice
+
+  template: # Template for creating the pods
+    metadata:
+      labels:
+        app: data-calc-microservice # Labels applied to the pods
+
+    spec: # Specification for the pod template
+      hostname: data-calc-microservice-host
+      containers: # Containers to run within the pod
+      - name: data-calc-microservice
+        image: us-central1-docker.pkg.dev/gke-ishan/my-repository/data-calc-microservice
+        ports: # Ports to expose on the container
+        - containerPort: 7001
+        volumeMounts: # Volumes to mount in the container
+          - name: storage-volume
+            mountPath: /ishan_PV_dir
+
+      volumes: # Volumes to be used by the pod
+      - name: storage-volume
+        persistentVolumeClaim:
+          claimName: persistent-storage-claim

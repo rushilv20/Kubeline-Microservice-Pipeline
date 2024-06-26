@@ -1,0 +1,14 @@
+apiVersion: v1 # API version for the Service resource
+kind: Service
+
+metadata:
+  name: input-guard-microservice-service  # Selects pods with the label "app: input-guard-microservice"
+
+spec: # Specification to define behavior and configuration
+  selector:
+    app: input-guard-microservice
+  ports:
+    - protocol: TCP
+      port: 80 # Expose port 80 on the service
+      targetPort: 6000  # Forward incoming traffic on port 80 to port 6000 on the pods
+  type: LoadBalancer # LoadBalancer service to expose the service externally
